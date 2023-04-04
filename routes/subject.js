@@ -4,6 +4,8 @@ const router = express.Router();
 
 const subjectController = require('../controllers/subject.js');
 
+router.get("/get-subjects-by-group/:groupId", subjectController.getSubjectsByGroup);
+
 router.post("/new-subject/", subjectController.newSubject);
 
 module.exports = router;

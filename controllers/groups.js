@@ -22,3 +22,13 @@ exports.newGroup = (req, res, next) => {
         })
     })
 }
+
+exports.getAllGroups = (req, res, next) => {
+    Group.find()
+    .then(result => {
+        return res.status(200).json({
+            message: "All groups presented",
+            groups: result
+        })
+    })
+}

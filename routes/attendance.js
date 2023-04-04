@@ -6,6 +6,8 @@ const attendanceController = require('../controllers/attendance.js');
 
 router.get("/new-attend/:cardId", attendanceController.newAttendance);
 
-router.get("/last-attendances", attendanceController.getLastTwentyAttendances);
+router.get("/new-attend-test", attendanceController.newAttendanceTemp);
+
+// router.get("/last-attendances", attendanceController.getLastTwentyAttendances);
 
 module.exports = router;
