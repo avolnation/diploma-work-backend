@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 
 const Absenteeism = new mongoose.Schema({
-    studendId: {
+    student: {
         type: mongoose.SchemaTypes.ObjectId,
-        required: true
+        required: true,
+        ref: 'student'
     },
     date: {
         type: String,
@@ -18,9 +19,10 @@ const Absenteeism = new mongoose.Schema({
         type: Number,
         required: true
     },
-    subjectId: {
+    subject: {
         type: mongoose.SchemaTypes.ObjectId,
-        required: true
+        required: true,
+        ref: 'subject'
     }
 })
 

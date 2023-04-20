@@ -6,6 +6,11 @@ const AttendanceRecord = new mongoose.Schema({
         type: mongoose.SchemaTypes.ObjectId,
         required: true,
         ref: 'student'
+    },
+    subject: {
+        type: mongoose.SchemaTypes.ObjectId,
+        required: true,
+        ref: 'subject'
     }
 })
 

@@ -36,7 +36,7 @@ app.use("/subjects", subjectRouter);
 mongoose.connect(MONGODB_URI)
     .then(res => {
         app.listen(port, () => {
-            console.log(`Listening to requests on port ${port}`);
+            console.log(`[INFO] Listening to requests on port ${port}`);
         })
     })
     .catch(err => {

@@ -73,7 +73,7 @@ exports.newAttendance = (req, res, next) => {
 
 exports.newAttendanceTemp = (req, res, next) => {
     // TODO 1: Сделать что-то с GMT (сейчас эта функция работает на GMT time)
-    // TODO 2: Заменить основную функцию в routes данной 
+    // TODO 2: Заменить основную функцию в routes данной, или оставить две, поменяв прошлую на такую же, но время будет браться с сервера
     const {
         cardId,
         time,
@@ -93,36 +93,9 @@ exports.newAttendanceTemp = (req, res, next) => {
 
     const dayOfTheWeek = helper_functions.dayOfTheWeekFromTimestamp(timestamp);
     const weekParity = +helper_functions.getWeekParity(timestamp);
-    // console.log(time)
+    const { pairNumber, pairStarts, pairEnds, pairStartsEdge } = helper_functions.getPairNumberFromTime(timestamp);
 
-    // const timestamp = +time + (3600000 * 3);
-    let pairNumber = 0;
-    let pairStarts = 0;
-    let pairEnds = 0;
-    let pairStartsEdge = 0;
-    // console.log("Time now: " + timestamp)
 
-    pairStart.forEach((el, index) => {
-        let pairStartTime = el[0].split(":")
-        let pairEndTime = el[1].split(":")
-        const pairStart = new Date(timestamp).setUTCHours(pairStartTime[0], pairStartTime[1] == "00" ? 0 : pairStartTime[1], 0, 0);
-        // console.log("Pair start: " + pairStart)
-        const pairEnd = new Date(timestamp).setUTCHours(pairEndTime[0], pairEndTime[1] == "00" ? 0 : pairEndTime[1], 0, 0);
-        // console.log("Pair end: " + pairEnd)
-        // console.log(!!(timestamp > pairStart))
-        // console.log(!!(timestamp < pairEnd))
-        if ((timestamp > pairStart) && (timestamp < pairEnd)) {
-            pairNumber = index + 1;
-            pairStarts = pairStart;
-            pairEnds = pairEnd;
-            pairStartsEdge = +pairStart + 600000
-        }
-    })
-    // console.log(!! timestamp > pairStarts)
-    // console.log(!! timestamp < pairStartsEdge)
-    // console.log(pairStarts + " | " +  pairStartsEdge)
-    console.log(pairNumber)
-    console.log(dayOfTheWeek)
     Schedule.find({
             pairNumber: pairNumber,
             dayOfTheWeek: dayOfTheWeek
@@ -184,7 +157,8 @@ exports.newAttendanceTemp = (req, res, next) => {
                                             } else {
                                                 new Attendance({
                                                         date: timestamp,
-                                                        student: student._id
+                                                        student: student._id,
+                                                        subject: pairsFiltered[0].subject
                                                     })
                                                     .save()
                                                     .then(result => {
