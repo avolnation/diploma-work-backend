@@ -24,7 +24,7 @@ const Schedule = new mongoose.Schema({
         required: true,
     },
     pairNumber: {
-        type: "String",
+        type: Number,
         required: true
     },
     subject: {
