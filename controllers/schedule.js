@@ -100,6 +100,23 @@ exports.editSchedule = (req, res, next) => {
 
 }
 
+exports.getSchedule = (req, res, next) => {
+    
+    const params = req.query;
+
+    Schedule
+        .find(params)
+        .populate('subject')
+        .then(pairInfo => {
+            // console.log(pairInfo)
+            return res.status(200).json({
+                status: "success",
+                message: "Занятия по заданным параметрам",
+                pairs: pairInfo
+            })
+        })
+}
+
 exports.getScheduleByDayAndGroup = (req, res, next) => {
 
     // const query = querystring.parse(req.query);

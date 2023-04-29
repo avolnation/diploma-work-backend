@@ -10,4 +10,6 @@ router.get("/new-attend-test", attendanceController.newAttendanceTemp);
 
 // router.get("/last-attendances", attendanceController.getLastTwentyAttendances);
 
+router.get("/", attendanceController.getAttendanceByParams);
+
 module.exports = router;

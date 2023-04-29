@@ -56,7 +56,6 @@ exports.getPairNumberFromTime = (timestamp) => {
             pairStarts = pairStart;
             pairEnds = pairEnd;
             pairStartsEdge = +pairStart + 600000;
-            // console.log(pairNumber)
         }
     })
 

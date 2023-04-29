@@ -12,6 +12,8 @@ router.get("/all-students", studentsController.getAllStudents)
 
 // router.get("/students", studentsController.getAllStudents)
 
+router.get("/", studentsController.getStudentsByParams)
+
 module.exports = router;
 
 // TODO: all-students, new-student => students

@@ -93,7 +93,12 @@ exports.newAttendanceTemp = (req, res, next) => {
 
     const dayOfTheWeek = helper_functions.dayOfTheWeekFromTimestamp(timestamp);
     const weekParity = +helper_functions.getWeekParity(timestamp);
-    const { pairNumber, pairStarts, pairEnds, pairStartsEdge } = helper_functions.getPairNumberFromTime(timestamp);
+    const {
+        pairNumber,
+        pairStarts,
+        pairEnds,
+        pairStartsEdge
+    } = helper_functions.getPairNumberFromTime(timestamp);
 
 
     Schedule.find({
@@ -140,48 +145,47 @@ exports.newAttendanceTemp = (req, res, next) => {
 
                             if (pairClassroom == classroom) {
                                 Attendance.find({
-                                    student: result._id,
-                                    date: {
-                                        $gte: pairStarts,
-                                        $lte: pairEnds
-                                    }
-                                })
-                                .then(result => {
-                                    if (result.length > 0) {
-                                        return res.status(404).json({
-                                            message: "Вы уже регистрировались на данное занятие!",
-                                            status: "error"
-                                        })
-                                    } else {
-                                        if ((timestamp > pairStarts) && (timestamp < pairStartsEdge)) {
-                                            new Attendance({
-                                                date: timestamp,
-                                                student: student._id,
-                                                subject: pairsFiltered[0].subject
-                                            })
-                                            .save()
-                                            .then(result => {
-                                                return res.status(201).json({
-                                                    message: "Посещение зарегистрировано!",
-                                                    status: "success"
-                                                })
-                                            })
-                                        } else {
+                                        student: result._id,
+                                        date: {
+                                            $gte: pairStarts,
+                                            $lte: pairEnds
+                                        }
+                                    })
+                                    .then(result => {
+                                        if (result.length > 0) {
                                             return res.status(404).json({
-                                                message: "Вы опоздали на занятие!",
+                                                message: "Вы уже регистрировались на данное занятие!",
                                                 status: "error"
                                             })
+                                        } else {
+                                            if ((timestamp > pairStarts) && (timestamp < pairStartsEdge)) {
+                                                new Attendance({
+                                                        date: timestamp,
+                                                        student: student._id,
+                                                        subject: pairsFiltered[0].subject
+                                                    })
+                                                    .save()
+                                                    .then(result => {
+                                                        return res.status(201).json({
+                                                            message: "Посещение зарегистрировано!",
+                                                            status: "success"
+                                                        })
+                                                    })
+                                            } else {
+                                                return res.status(404).json({
+                                                    message: "Вы опоздали на занятие!",
+                                                    status: "error"
+                                                })
+                                            }
                                         }
-                                    }
-                                })
+                                    })
                             } else {
                                 return res.status(404).json({
                                     message: "Не та аудитория.",
                                     status: "error"
                                 })
                             }
-                        }
-                        else {
+                        } else {
                             return res.status(404).json({
                                 message: "Метка не принадлежит какому-либо студенту.",
                                 status: "error"
@@ -191,6 +195,43 @@ exports.newAttendanceTemp = (req, res, next) => {
 
             }
         })
+}
+
+exports.getAttendanceByParams = (req, res, next) => {
+
+    const params = req.query
+
+    if (params.hasOwnProperty("lte") || params.hasOwnProperty("gte")) {
+        const lte = params.lte.toString()
+        const gte = params.gte.toString()
+        delete params.lte
+        delete params.gte
+        Attendance.find({
+                date: {
+                    $gte: gte,
+                    $lte: lte
+                }
+            })
+            .then((attendances) => {
+                    return res.status(200).json({
+                        message: "Посещения для группы между заданными промежутками",
+                        status: "success",
+                        attendances: attendances
+                    })
+                }
+
+            )
+    } else {
+        Attendance
+            .find(params)
+            .then(attendances => {
+                return res.status(200).json({
+                    message: "Посещения для группы по заданным параметрам",
+                    status: "success",
+                    attendances: attendances
+                })
+            })
+    }
 }
 
 //! Подумать, нужна ли данная функция (???)
