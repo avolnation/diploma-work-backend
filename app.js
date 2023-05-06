@@ -1,7 +1,7 @@
+require('dotenv').config();
 const express = require('express')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
-const MONGODB_URI = 'mongodb+srv://avolnation:34Q1WPNVgV6pxUeD@cluster0.sfcysht.mongodb.net/diploma-database';
 const port = 3002;
 const app = express();
 
@@ -37,7 +37,7 @@ app.use("/subjects", subjectRouter);
 app.use("/absenteeisms", absenteeismRouter);
 app.use("/functions", functionsRouter);
 
-mongoose.connect(MONGODB_URI)
+mongoose.connect(process.env.MONGODB_URI)
     .then(res => {
         app.listen(port, () => {
             console.log(`[INFO] Listening to requests on port ${port}`);
