@@ -43,7 +43,7 @@ exports.newStudent = (req, res, next) => {
 
 exports.getStudentsByParams = (req, res, next) => {
 
-    console.log(req.query)
+    // console.log(req.query)
     // if (req.query.hasOwnProperty("attendance")) {
     //     const params = req.query
     //     const timeNow = params.timeNow
@@ -92,28 +92,30 @@ exports.getStudentsByParams = (req, res, next) => {
 
 
 
-                // const startTimer = () => { {
-                //     timer = setTimeout(() => {
-                //         return res.status(200).json({
-                //             message: "Список студентов с записями о посещениях...",
-                //             status: "success",
-                //             students: mappedStudents
-                //         })
-                //     }, 2000)
-                // }}
+    // const startTimer = () => { {
+    //     timer = setTimeout(() => {
+    //         return res.status(200).json({
+    //             message: "Список студентов с записями о посещениях...",
+    //             status: "success",
+    //             students: mappedStudents
+    //         })
+    //     }, 2000)
+    // }}
 
-            // })
+    // })
     // } else {
-        
-        Student.find(req.query)
-            .then(students => {
-                return res.status(200).json({
-                    message: "Список студентов по полученным параметрам",
-                    status: "success",
-                    students: students
-                })
+
+    Student
+        .find(req.query)
+        .populate("group")
+        .then(students => {
+            return res.status(200).json({
+                message: "Список студентов по полученным параметрам",
+                status: "success",
+                students: students
             })
-    }
+        })
+}
 
 exports.getAllStudents = (req, res, next) => {
     Student

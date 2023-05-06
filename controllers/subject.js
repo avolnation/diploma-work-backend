@@ -13,6 +13,7 @@ exports.newSubject = (req, res, next) => {
 }
 
 exports.getSubjectsByGroup = (req, res, next) => {
+    
     const group = req.params.groupId;
 
     Subject.find({
@@ -26,4 +27,16 @@ exports.getSubjectsByGroup = (req, res, next) => {
             })
         })
 
+}
+
+exports.getSubjectsByParams = (req, res, next) => {
+    const params = req.query;
+    Subject.find(params)
+    .then(subjects => {
+        return res.status(200).json({
+            message: "Предметы по заданным параметрам",
+            status: "success",
+            subjects: subjects
+        })
+    })
 }

@@ -1,11 +1,10 @@
 const mongoose = require('mongoose')
-const querystring = require('node:querystring')
 const Schedule = require("../models/schedule.js");
 const Subject = require("../models/subject.js");
 const helperFunctions = require("../helper_functions.js")
 
 exports.newSchedule = (req, res, next) => {
-    console.log(req.body);
+    // console.log(req.body);
 
     const {
         dayOfTheWeek,
@@ -40,7 +39,7 @@ exports.newSchedule = (req, res, next) => {
                 dayOfTheWeek: dayOfTheWeek
             })
             .then(result => {
-                console.log(result + !!result)
+                // console.log(result + !!result)
                 return result.length >= 1 ?
                     res.status(202).json({
                         message: `${helperFunctions.dayToRelative(dayOfTheWeek)} уже есть ${helperFunctions.declOfNum(result.length, ['пара', 'пары', 'пар'])} (${result.length}). Продолжение приведёт к удалению существующих(ей) пар(ы) и записи заданной пары. Продолжить?`,
@@ -101,7 +100,7 @@ exports.editSchedule = (req, res, next) => {
 }
 
 exports.getSchedule = (req, res, next) => {
-    
+
     const params = req.query;
 
     Schedule
@@ -128,7 +127,7 @@ exports.getScheduleByDayAndGroup = (req, res, next) => {
         group
     } = req.query
 
-    console.log(day + group)
+    // console.log(day + group)
 
 
     //! Aggregate не приводит String к ObjectID, поэтому, нужно String кастить к ObjectId
