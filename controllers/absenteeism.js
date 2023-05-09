@@ -23,33 +23,44 @@ exports.findByParams = (req, res, next) => {
             // console.log(endOfTheDay)
 
             Absenteeism.find({
-                student: studentId,
-                date: {
-                    $gte: startOfTheDay.getTime(),
-                    $lte: endOfTheDay.getTime()
-                },
-                subject: subject
-            })
-            .populate("subject")
-            .then(absenteeisms => {
-                return res.status(200).json({
-                    message: "Пропуски по заданным параметрам",
-                    status: "success",
-                    absenteeisms: absenteeisms
+                    student: studentId,
+                    date: {
+                        $gte: startOfTheDay.getTime(),
+                        $lte: endOfTheDay.getTime()
+                    },
+                    subject: subject
                 })
-            })
+                .populate("subject")
+                .then(absenteeisms => {
+                    return res.status(200).json({
+                        message: "Пропуски по заданным параметрам",
+                        status: "success",
+                        absenteeisms: absenteeisms
+                    })
+                })
         }
-        if(req.query.hasOwnProperty("dateByRange")){
-            const { studentId, dateByRange, subject} = req.query;
+        if (req.query.hasOwnProperty("dateByRange")) {
+            const {
+                studentId,
+                dateByRange,
+                subject
+            } = req.query;
 
             let gte = new Date(+dateByRange[0])
             gte.setUTCHours(0, 0, 0, 0)
-            
+
             let lte = new Date(+dateByRange[1])
             lte.setUTCHours(23, 59, 59, 999)
 
             Absenteeism
-                .find({studentId: studentId, date: {$gte: gte.getTime(), $lte: lte.getTime()}, subject: subject})
+                .find({
+                    student: studentId,
+                    date: {
+                        $gte: gte.getTime(),
+                        $lte: lte.getTime()
+                    },
+                    subject: subject
+                })
                 .populate("subject")
                 .then(absenteeisms => {
                     return res.status(200).json({
@@ -115,7 +126,38 @@ exports.findByParams = (req, res, next) => {
                 })
             })
     }
+}
 
+exports.editAbsenteeism = (req, res, next) => {
+    const {
+        absenteeismId,
+        type
+    } = req.body;
 
+    Absenteeism
+        .findByIdAndUpdate(absenteeismId, {
+            type: +type
+        }, {
+            new: true
+        })
+        .populate("subject")
+        .then(result => {
+            return res.status(201).json({
+                message: "Посещение было успешно обновлено!",
+                status: "success",
+                result: result
+            })
+        })
+}
 
+exports.deleteAbsenteeism = (req, res, next) => {
+    Absenteeism
+        .findByIdAndDelete(req.query.absenteeismId)
+        .then(result => {
+            return res.status(201).json({
+                message: "Посещение было успешно удалено!",
+                status: "success",
+                result: result
+            })
+        })
 }
