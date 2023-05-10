@@ -12,6 +12,7 @@ const scheduleRouter = require('./routes/schedule.js');
 const subjectRouter = require('./routes/subject.js');
 const absenteeismRouter = require('./routes/absenteeism.js');
 const functionsRouter = require('./routes/helper-functions.js');
+const usersRouter = require('./routes/users.js');
 
 app.use(bodyParser.json({
     extended: false
@@ -36,6 +37,7 @@ app.use("/schedule", scheduleRouter);
 app.use("/subjects", subjectRouter);
 app.use("/absenteeisms", absenteeismRouter);
 app.use("/functions", functionsRouter);
+app.use("/users", usersRouter);
 
 mongoose.connect(process.env.MONGODB_URI)
     .then(res => {
