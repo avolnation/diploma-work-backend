@@ -75,6 +75,8 @@ exports.newAttendanceTemp = (req, res, next) => {
     // TODO 1: Сделать что-то с GMT (сейчас эта функция работает на GMT time)
     // TODO 2: Заменить основную функцию в routes данной, или оставить две, поменяв прошлую на такую же, но время будет браться с сервера
 
+    console.log(req.body);
+
     if (req.body.hasOwnProperty("fromClient")) {
         // TODO: Находим посещение если оно уже есть, далее создаём новое
         const {
@@ -242,12 +244,44 @@ exports.getAttendanceByParams = (req, res, next) => {
 
     const params = req.query
 
-    if (params.hasOwnProperty("lte") || params.hasOwnProperty("gte")) {
+    if (params.hasOwnProperty("subject") && params.subject.length >= 1) {
+
+        console.log(params.subject);
+
+        const subjects = params.subject.map(subject => {
+            return {subject: subject}
+        })
+
+        console.log(subjects)
+
+
+        return Attendance.find({
+                $or: subjects,
+                date: {
+                    $gte: params.gte.toString(),
+                    $lte: params.lte.toString()
+                }
+            })
+            .populate("student")
+            .populate("subject")
+            .then(attendances => {
+                return res.status(200).json({
+                    message: "Недавние посещения по заданным параметрам",
+                    status: "success",
+                    attendances: attendances
+                })
+            })
+    }
+
+    if ((params.hasOwnProperty("lte") || params.hasOwnProperty("gte")) && !(params.hasOwnProperty("subject"))) {
         const lte = params.lte.toString()
         const gte = params.gte.toString()
-        delete params.lte
-        delete params.gte
+
+        const searchParams = params;
+        delete searchParams.lte;
+        delete searchParams.gte;
         Attendance.find({
+                ...searchParams,
                 date: {
                     $gte: gte,
                     $lte: lte

@@ -94,7 +94,7 @@ exports.findByParams = (req, res, next) => {
                         "posHoursSum": {
                             $sum: {
                                 $cond: [{
-                                    "$eq": ["type", 1]
+                                    "$eq": ["$type", 1]
                                 }, "$hoursNumber", 0]
                             }
                         },
