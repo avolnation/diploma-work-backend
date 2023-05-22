@@ -11,23 +11,24 @@ exports.newGroup = (req, res, next) => {
             .save()
             .then(result => {
                 return res.status(201).json({
-                    message: "Group was added succesfully!",
+                    message: "Группа была создана успешно!",
                     status: "success"
                 })
             })
         }
         return res.status(400).json({
+            message: "Группа с таким названием уже существует.",
             status: "error",
-            error: "Data with such credentials already exists."
         })
     })
 }
 
 exports.getAllGroups = (req, res, next) => {
     Group.find()
+    .sort({title: "desc"})
     .then(result => {
         return res.status(200).json({
-            message: "All groups presented",
+            message: "Группы по запросу.",
             groups: result
         })
     })

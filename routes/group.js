@@ -4,8 +4,8 @@ const router = express.Router();
 
 const groupsController = require('../controllers/groups.js');
 
-router.post("/new-group/", groupsController.newGroup)
+router.post("/", groupsController.newGroup)
 
-router.get("/get-all-groups", groupsController.getAllGroups)
+router.get("/", groupsController.getAllGroups)
 
 module.exports = router;
