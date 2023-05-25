@@ -13,13 +13,13 @@ const transporter = nodemailer.createTransport({
     }
 })
 
-exports.userDataHandler = (req, res, next) => {
+exports.postRequestsHandler = (req, res, next) => {
 
     switch (req.body.method) {
         case "new-user":
             return User
                 .findOne({
-                    email: email
+                    login: req.body.login
                 })
                 .then(userDoc => {
                     if (userDoc) {
@@ -28,26 +28,27 @@ exports.userDataHandler = (req, res, next) => {
                             status: 'error',
                         })
                     }
-                    return bcrypt.hash(password, 12).then(hashedPassword => {
-                            return bcrypt.hash(hashedPassword + Date.now().toString(), 12)
-                                .then(hashedToken => {
-                                    const user = new User({
-                                        ...req.body,
-                                        password: hashedPassword,
-                                        token: hashedToken
-                                    });
-                                    return user.save()
-                                })
-                        })
-                        .then(result => {
-                            console.log(result)
-                            res.status(201).json({
-                                message: `Вы успешно зарегистрировались!`,
-                                status: 'success'
+                    return bcrypt.hash(req.body.password, 12).then(hashedPassword => {
+                        return bcrypt.hash(hashedPassword + Date.now().toString(), 12)
+                            .then(hashedToken => {
+                                const user = new User({
+                                    ...req.body,
+                                    password: hashedPassword,
+                                    token: hashedToken
+                                });
+                                return user
+                                    .save()
+                                    .then(result => {
+                                        res.status(201).json({
+                                            message: `Вы успешно зарегистрировались!`,
+                                            status: 'success'
+                                        })
+                                    })
                             })
-                        })
+                    })
                 })
                 .catch(err => {
+                    console.log(err);
                     return res.status(400).json({
                         message: 'Что-то пошло не так!',
                         status: 'error'
@@ -85,13 +86,81 @@ exports.userDataHandler = (req, res, next) => {
                         })
                     }
                 })
+            break;
+        case "new-initials":
+            return User.findOne({
+                    token: req.body.token
+                })
+                .then(user => {
+                    if (req.body.token == 'undefined' || req.body.token.length == 0) {
+                        return res.status(404).json({
+                            message: "Токен не был указан. Возможно, вы не авторизованы.",
+                            status: "error"
+                        })
+                    }
+                    if (!user) {
+                        return res.status(404).json({
+                            message: "Пользователь не найден. Возможно, вы не авторизованы.",
+                            status: "error"
+                        })
+                    }
+                    const updateObject = req.body;
+                    delete updateObject.token;
+                    delete updateObject.method;
+
+                    user.update({
+                            ...updateObject
+                        })
+                        .then(user => {
+                            return res.status(201).json({
+                                message: "Инициалы были изменены.",
+                                status: "success"
+                            })
+                        })
+                })
+            break;
+        case "new-password-from-profile":
+            // console.log(req.body)
+            return User.findOne({
+                    token: req.body.token
+                })
+                .then(user => {
+                    if (!user) {
+                        return res.status(404).json({
+                            message: "Пользователь не найден. Возможно, вы не авторизованы.",
+                            status: "error"
+                        })
+                    }
+                    bcrypt
+                        .compare(req.body["old-password"], user.password)
+                        .then(match => {
+                            if (!match) {
+                                return res.status(400).json({
+                                    message: 'Неправильный пароль!',
+                                    status: 'error',
+                                })
+                            }
+                            return bcrypt.hash(req.body["new-password"], 12).then(hashedPassword => {
+                                user
+                                    .update({
+                                        password: hashedPassword,
+                                    })
+                                    .then(result => {
+                                        return res.status(201).json({
+                                            message: 'Пароль был успешно изменён.',
+                                            status: 'success',
+                                        })
+                                    })
+                            })
+                        })
+                })
+            break;
     }
 };
 
-exports.loginAndForgotPasswordHandler = (req, res, next) => {
+exports.getRequestsHandler = (req, res, next) => {
 
     switch (req.query.method) {
-
         case "login":
             return User
                 .findOne({
@@ -234,5 +303,69 @@ exports.loginAndForgotPasswordHandler = (req, res, next) => {
                     }
                 })
             break;
+        case "users":
+            return User.findOne({
+                    token: req.query.token
+                })
+                .then(user => {
+                    if (req.query.token.length == 0 || req.query.token == "undefined") {
+                        return res.status(404).json({
+                            message: "Вы не авторизованы!",
+                            status: "error"
+                        })
+                    }
+                    if (!(user?.role == "admin")) {
+                        return res.status(404).json({
+                            message: "Недостаточно прав",
+                            status: "error"
+                        })
+                    }
+                    return User
+                        .find()
+                        .select({
+                            "_id": 0,
+                            "login": 1,
+                            "name": 1,
+                            "surname": 1,
+                            "role": 1,
+                        })
+                        .then(users => {
+                            return res.status(200).json({
+                                message: "Список всех пользователей",
+                                status: "success",
+                                users: users
+                            })
+                        })
+                })
+            break;
+        case "change-role":
+            return User.findOne({
+                token: req.query.token
+            })
+            .then(user => {
+                if(!user){
+                    return res.status(404).json({
+                        message: "Пользователя с таким токеном не найдено",
+                        status: "error"
+                    })
+                }
+                if(!user?.role == "admin"){
+                    return res.status(404).json({
+                        message: "Недостаточно прав для данного действия",
+                        status: "error"
+                    })
+                }
+                return User
+                        .findOne({login: req.query.login})
+                        .then(user => {
+                            user.update({role: req.query.role})
+                            .then(result => {
+                                return res.status(201).json({
+                                    message: "Роль была обновлена успешно.",
+                                    status: "success"
+                                })
+                            })
+                        })
+            })
     }
 }
