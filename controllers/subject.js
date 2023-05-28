@@ -6,7 +6,7 @@ exports.newSubject = (req, res, next) => {
         .save()
         .then(result => {
             return res.status(201).json({
-                message: "Subject created succesfully",
+                message: "Предмет был создан успешно.",
                 status: "success"
             })
         })
@@ -21,7 +21,7 @@ exports.getSubjectsByGroup = (req, res, next) => {
         })
         .then(result => {
             return res.status(200).json({
-                message: "Subjects found for this group",
+                message: "Предметы по заданным параметрам.",
                 status: "success",
                 subjects: result
             })
@@ -34,7 +34,7 @@ exports.getSubjectsByParams = (req, res, next) => {
     Subject.find(params)
     .then(subjects => {
         return res.status(200).json({
-            message: "Предметы по заданным параметрам",
+            message: "Предметы по заданным параметрам.",
             status: "success",
             subjects: subjects
         })

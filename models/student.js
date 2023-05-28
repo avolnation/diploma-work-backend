@@ -13,6 +13,9 @@ const Student = new mongoose.Schema({
     patronymic: {
         type: String
     },
+    dateOfBirth: {
+        type: String
+    },
     group: {
         type: mongoose.SchemaTypes.ObjectId,
         required: true,

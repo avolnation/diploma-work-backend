@@ -110,6 +110,9 @@ exports.postRequestsHandler = (req, res, next) => {
 
                     user.update({
                             ...updateObject
+                        }, 
+                        {
+                            returnDocument: "after"
                         })
                         .then(user => {
                             return res.status(201).json({

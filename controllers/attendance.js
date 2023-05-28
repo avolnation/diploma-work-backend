@@ -125,11 +125,10 @@ exports.newAttendanceTemp = (req, res, next) => {
     } else {
         const {
             cardId,
-            time,
             classroom
         } = req.body
 
-        const timestamp = +time
+        const timestamp = 1684832400000;
 
         const dayOfTheWeek = helper_functions.dayOfTheWeekFromTimestamp(timestamp);
         const weekParity = +helper_functions.getWeekParity(timestamp);

@@ -4,7 +4,7 @@ const router = express.Router();
 
 const studentsController = require('../controllers/students.js');
 
-router.post("/new-student/", studentsController.newStudent)
+router.post("/", studentsController.newStudent)
 
 // router.post("/students", studentsController.newStudent)
 

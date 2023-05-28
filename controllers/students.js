@@ -3,40 +3,26 @@ const Attendance = require('../models/attendance.js')
 const helper_functions = require('../helper_functions.js')
 
 exports.newStudent = (req, res, next) => {
-    const {
-        cardId,
-        name,
-        surname,
-        patronymic,
-        dateOfBirth,
-        group
-    } = req.body;
-
     Student
         .findOne({
-            cardId: cardId
+            cardId: req.body.cardId
         })
         .then(result => {
             if (!result) {
                 return new Student({
-                        cardId: cardId,
-                        name: name,
-                        surname: surname,
-                        patronymic: patronymic,
-                        dateOfBirth: dateOfBirth,
-                        group: group
+                        ...req.body
                     })
                     .save()
                     .then(result => {
                         return res.status(201).json({
-                            message: "Student was created succesfully!",
+                            message: "Студент был добавлен успешно",
                             status: "success"
                         })
                     })
             }
             return res.status(400).json({
+                error: "Такая метка принадлежит другому студенту. Попробуйте другую.",
                 status: "error",
-                error: "Data with such credentials already exists."
             })
         })
 }

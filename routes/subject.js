@@ -8,6 +8,6 @@ router.get("/", subjectController.getSubjectsByParams);
 
 router.get("/get-subjects-by-group/:groupId", subjectController.getSubjectsByGroup);
 
-router.post("/new-subject/", subjectController.newSubject);
+router.post("/", subjectController.newSubject);
 
 module.exports = router;

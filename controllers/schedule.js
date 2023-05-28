@@ -33,23 +33,28 @@ exports.newSchedule = (req, res, next) => {
                     })
             })
     } else {
-        return Schedule
-            .find({
-                pairNumber: pairNumber,
-                dayOfTheWeek: dayOfTheWeek
-            })
-            .then(result => {
-                // console.log(result + !!result)
-                return result.length >= 1 ?
-                    res.status(202).json({
-                        message: `${helperFunctions.dayToRelative(dayOfTheWeek)} уже есть ${helperFunctions.declOfNum(result.length, ['пара', 'пары', 'пар'])} (${result.length}). Продолжение приведёт к удалению существующих(ей) пар(ы) и записи заданной пары. Продолжить?`,
-                        status: "warning"
-                    }) :
-                    res.status(201).json({
-                        message: 'Новая пара сохранена',
-                        status: 'success'
+        // return Schedule
+        //     .find({
+        //         pairNumber: pairNumber,
+        //         dayOfTheWeek: dayOfTheWeek
+        //     })
+        //     .then(result => {
+        //         // console.log(result + !!result)
+        //         return result.length >= 1 ?
+        //             res.status(202).json({
+        //                 message: `${helperFunctions.dayToRelative(dayOfTheWeek)} уже есть ${helperFunctions.declOfNum(result.length, ['пара', 'пары', 'пар'])} (${result.length}). Продолжение приведёт к удалению существующих(ей) пар(ы) и записи заданной пары. Продолжить?`,
+        //                 status: "warning"
+        //             }) :
+                    new Schedule({...req.body})
+                    .save()
+                    .then(result => {
+                        return res.status(201).json({
+                            message: 'Новая пара сохранена',
+                            status: 'success'
+                        })
+
                     })
-            })
+            // })
     }
 
 
