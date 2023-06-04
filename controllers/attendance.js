@@ -4,7 +4,8 @@ const Schedule = require("../models/schedule");
 
 const helper_functions = require('../helper_functions')
 
-exports.newAttendance = (req, res, next) => {
+//! Deprecated
+exports.newAttendanceOld = (req, res, next) => {
 
     const cardId = req.params.cardId;
 
@@ -71,11 +72,7 @@ exports.newAttendance = (req, res, next) => {
         })
 }
 
-exports.newAttendanceTemp = (req, res, next) => {
-    // TODO 1: Сделать что-то с GMT (сейчас эта функция работает на GMT time)
-    // TODO 2: Заменить основную функцию в routes данной, или оставить две, поменяв прошлую на такую же, но время будет браться с сервера
-
-    console.log(req.body);
+exports.newAttendance = (req, res, next) => {
 
     if (req.body.hasOwnProperty("fromClient")) {
         // TODO: Находим посещение если оно уже есть, далее создаём новое
@@ -122,11 +119,30 @@ exports.newAttendanceTemp = (req, res, next) => {
                         })
                 }
             })
+            .catch(e => {
+                return res.status(400).json({
+                    message: "Произошла ошибка на сервере",
+                    status: "error"
+                })
+            })
     } else {
+
+        const secureTokens = ["7QYdTNc49xOg1H3HeLpGASSt72a1voBC", ];
+
+        console.log(req.body);
+
         const {
             cardId,
-            classroom
+            secureToken,
+            classroom,
         } = req.body
+
+        if(!secureTokens.includes(secureToken)){
+            return res.status(404).json({
+                message: "Невозможно зарегистрироваться на занятие. Неверный или недействительный токен считывателя. Обратитесь к администратору системы.",
+                status: "error"
+            })
+        }
 
         const timestamp = 1684832400000;
 
@@ -235,8 +251,6 @@ exports.newAttendanceTemp = (req, res, next) => {
                 }
             })
     }
-
-
 }
 
 exports.getAttendanceByParams = (req, res, next) => {
@@ -318,25 +332,3 @@ exports.deleteAttendance = (req, res, next) => {
             })
         })
 }
-
-//! Подумать, нужна ли данная функция (???)
-// exports.getLastTwentyAttendances = (req, res, next) => {
-
-//     return Attendance
-//         .find()
-//         .limit(20)
-//         .populate({
-//             path: 'student',
-//             populate: {
-//                 path: 'group'
-//             }
-//         })
-//         .then(result => {
-//             return res.status(200).json({
-//                 message: "Last 20 attendances",
-//                 status: "success",
-//                 attendances: result
-//             })
-//         })
-
-// }
